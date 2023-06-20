@@ -1,0 +1,76 @@
+## BGP Multi-AS Juniper vlab - vMX6
+edit
+delete interfaces ge-0/0/3 unit 0 family inet address 10.100.46.2/24
+delete interfaces ge-0/0/4 unit 0 family inet address 10.100.56.2/24
+delete interfaces lo0 unit 0 family inet address 10.100.100.6/32
+delete protocols bgp group IBGP type internal
+delete protocols bgp group IBGP local-address 10.100.100.6
+delete protocols bgp group IBGP neighbor 10.100.100.5
+delete protocols bgp group to-AS64533 type external
+delete protocols bgp group to-AS64533 peer-as 64533
+delete protocols bgp group to-AS64533 neighbor 10.100.46.1
+delete protocols ospf area 0.0.0.0 interface lo0.0
+delete protocols ospf area 0.0.0.0 interface ge-0/0/4.0
+delete routing-options autonomous-system 64544
+delete routing-options static route 0.0.0.0/0 next-hop 100.123.0.1
+
+## loading R6_Sydney Configuration
+set system host-name R6_Sydney
+
+set interfaces ge-0/0/3 description "Connection to R4_Singapore"
+set interfaces ge-0/0/3 unit 0 family inet address 10.4.1.6/30
+set interfaces ge-0/0/3 unit 0 family inet6 address 2406:6004:1::6/126
+set interfaces ge-0/0/4 description "Connection to R5_Tokyo"
+set interfaces ge-0/0/4 unit 0 family inet address 10.55.1.10/30
+set interfaces ge-0/0/4 unit 0 family inet6 address 2406:6455:1::a/126
+set interfaces lo0 description "*** Loopback ***"
+set interfaces lo0 unit 0 family inet address 192.168.0.1/32
+set interfaces lo0 unit 0 family inet6 address 2406:6066::1/128
+set policy-options policy-statement AS64655-v4-out term static_connected from route-filter 192.168.0.0/19 exact
+set policy-options policy-statement AS64655-v4-out term static_connected then accept
+set policy-options policy-statement AS64655-v4-out term 1000 then reject
+set policy-options policy-statement AS64655-v6-out term static-connected-v6 from route-filter 2406:6066::/32 exact
+set policy-options policy-statement AS64655-v6-out term static-connected-v6 then accept
+set policy-options policy-statement AS64655-v6-out term 1000 then reject
+set policy-options policy-statement AS65004-v4-out term static_connected from protocol static
+set policy-options policy-statement AS65004-v4-out term static_connected from route-filter 192.168.0.0/19 exact
+set policy-options policy-statement AS65004-v4-out term static_connected then accept
+set policy-options policy-statement AS65004-v6-out term static-connected-v6 from route-filter 2406:6066::/32 exact
+set policy-options policy-statement AS65004-v6-out term static-connected-v6 then accept
+set policy-options policy-statement AS65004-v6-out term 1000 then reject
+set policy-options policy-statement ECMP then load-balance per-packet
+set policy-options policy-statement next-hop-self then next-hop self
+set policy-options policy-statement static-or-connected term static_connected from protocol static
+set policy-options policy-statement static-or-connected term static_connected from protocol direct
+set policy-options policy-statement static-or-connected term static_connected from route-filter 192.168.0.0/19 exact
+set policy-options policy-statement static-or-connected term static_connected then accept
+set policy-options policy-statement static-or-connected term 1000 then reject
+set protocols bgp group eBGP-Regional-AS65004-v4 type external
+set protocols bgp group eBGP-Regional-AS65004-v4 family inet unicast
+set protocols bgp group eBGP-Regional-AS65004-v4 export static-or-connected
+set protocols bgp group eBGP-Regional-AS65004-v4 peer-as 65004
+set protocols bgp group eBGP-Regional-AS65004-v4 neighbor 10.4.1.5
+set protocols bgp group eBGP-Regional-AS65004-v6 type external
+set protocols bgp group eBGP-Regional-AS65004-v6 family inet6 unicast
+set protocols bgp group eBGP-Regional-AS65004-v6 export AS65004-v6-out
+set protocols bgp group eBGP-Regional-AS65004-v6 export next-hop-self
+set protocols bgp group eBGP-Regional-AS65004-v6 peer-as 65004
+set protocols bgp group eBGP-Regional-AS65004-v6 neighbor 2406:6004:1::5
+set protocols bgp group eBGP-Tier1-AS64655-v6 type external
+set protocols bgp group eBGP-Tier1-AS64655-v6 family inet6 unicast
+set protocols bgp group eBGP-Tier1-AS64655-v6 export AS64655-v6-out
+set protocols bgp group eBGP-Tier1-AS64655-v6 export next-hop-self
+set protocols bgp group eBGP-Tier1-AS64655-v6 peer-as 64655
+set protocols bgp group eBGP-Tier1-AS64655-v6 neighbor 2406:6455:1::9
+set protocols bgp group eBGP-Tier1-AS64655-v4 type external
+set protocols bgp group eBGP-Tier1-AS64655-v4 family inet unicast
+set protocols bgp group eBGP-Tier1-AS64655-v4 export AS64655-v4-out
+set protocols bgp group eBGP-Tier1-AS64655-v4 export next-hop-self
+set protocols bgp group eBGP-Tier1-AS64655-v4 peer-as 64655
+set protocols bgp group eBGP-Tier1-AS64655-v4 neighbor 10.55.1.9
+set routing-options rib inet6.0 static route 2406:6066::/32 discard
+set routing-options autonomous-system 65066
+set routing-options static route 192.168.0.0/19 discard
+
+commit and-quit
+
