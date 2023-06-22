@@ -1,0 +1,139 @@
+#### APNIC Juniper vSRX Sandbox LAB
+### Load R3_Seoul Configuration
+
+edit
+delete security
+set security forwarding-options family inet6 mode packet-based
+
+set system host-name R3_Seoul
+set system root-authentication encrypted-password apnic
+commit
+
+set interfaces ge-0/0/0 description "Connection to AS64655 Tokyo"
+set interfaces ge-0/0/0 unit 0 family inet address 10.55.1.2/30
+set interfaces ge-0/0/0 unit 0 family inet6 address 2406:6455:1::2/126
+set interfaces ge-0/0/3 description "Connection to AS65004 Singapore"
+set interfaces ge-0/0/3 unit 0 family inet address 10.33.1.5/30
+set interfaces ge-0/0/3 unit 0 family inet6 address 2406:6433:1::5/126
+set interfaces ge-0/0/1 description "Connection to AS65001 Hongkong"
+set interfaces ge-0/0/1 unit 0 family inet address 10.33.1.1/30
+set interfaces ge-0/0/1 unit 0 family inet6 address 2406:6433:1::1/126
+set interfaces lo0 description "*** Loopback ***"
+set interfaces lo0 unit 0 family inet address 10.33.0.1/32
+set interfaces lo0 unit 0 family inet6 address 2406:6433::1/128
+
+set policy-options policy-statement AS64655-v4-Tier1-out term AS65004-v4 from policy AS65004-v4-exact
+set policy-options policy-statement AS64655-v4-Tier1-out term AS65004-v4 then accept
+set policy-options policy-statement AS64655-v4-Tier1-out term AS65001-v4 from policy AS65001-v4-exact
+set policy-options policy-statement AS64655-v4-Tier1-out term AS65001-v4 then accept
+set policy-options policy-statement AS64655-v4-Tier1-out then reject
+set policy-options policy-statement AS64655-v6-Tier1-out term AS65004-v6 from policy AS65004-v6-exact
+set policy-options policy-statement AS64655-v6-Tier1-out term AS65004-v6 then accept
+set policy-options policy-statement AS64655-v6-Tier1-out term AS65001-v6 from policy AS65001-v6-exact
+set policy-options policy-statement AS64655-v6-Tier1-out term AS65001-v6 then accept
+set policy-options policy-statement AS64655-v6-Tier1-out then reject
+set policy-options policy-statement AS65001-v4-cust-in term match-exact from policy AS65001-v4-exact
+set policy-options policy-statement AS65001-v4-cust-in term match-exact then next policy
+set policy-options policy-statement AS65001-v4-cust-in then reject
+set policy-options policy-statement AS65001-v4-exact term accept from route-filter 0.0.0.0/0 exact reject
+set policy-options policy-statement AS65001-v4-exact term accept from route-filter 10.1.0.0/16 exact
+set policy-options policy-statement AS65001-v4-exact term accept from route-filter 172.16.0.0/19 exact
+set policy-options policy-statement AS65001-v4-exact term accept then local-preference 120
+set policy-options policy-statement AS65001-v4-exact term accept then accept
+set policy-options policy-statement AS65001-v4-exact then reject
+set policy-options policy-statement AS65001-v6-cust-in term match-exact from policy AS65001-v6-exact
+set policy-options policy-statement AS65001-v6-cust-in term match-exact then next policy
+set policy-options policy-statement AS65001-v6-cust-in then reject
+set policy-options policy-statement AS65001-v6-exact term accept from route-filter ::/0 exact reject
+set policy-options policy-statement AS65001-v6-exact term accept from route-filter 2406:6001::/32 exact
+set policy-options policy-statement AS65001-v6-exact term accept from route-filter 2406:6022::/32 exact
+set policy-options policy-statement AS65001-v6-exact term accept then local-preference 120
+set policy-options policy-statement AS65001-v6-exact term accept then accept
+set policy-options policy-statement AS65001-v6-exact then reject
+set policy-options policy-statement AS65004-v4-cust-in term match-exact from policy AS65004-v4-exact
+set policy-options policy-statement AS65004-v4-cust-in term match-exact then next policy
+set policy-options policy-statement AS65004-v4-cust-in then reject
+set policy-options policy-statement AS65004-v4-exact term accept from route-filter 0.0.0.0/0 exact reject
+set policy-options policy-statement AS65004-v4-exact term accept from route-filter 10.4.0.0/16 exact
+set policy-options policy-statement AS65004-v4-exact term accept from route-filter 192.168.0.0/19 exact
+set policy-options policy-statement AS65004-v4-exact term accept then local-preference 120
+set policy-options policy-statement AS65004-v4-exact term accept then accept
+set policy-options policy-statement AS65004-v4-exact then reject
+set policy-options policy-statement AS65004-v6-cust-in term match-exact from policy AS65004-v6-exact
+set policy-options policy-statement AS65004-v6-cust-in term match-exact then next policy
+set policy-options policy-statement AS65004-v6-cust-in then reject
+set policy-options policy-statement AS65004-v6-exact term accept from route-filter ::/0 exact reject
+set policy-options policy-statement AS65004-v6-exact term accept from route-filter 2406:6004::/32 exact
+set policy-options policy-statement AS65004-v6-exact term accept from route-filter 2406:6066::/32 exact
+set policy-options policy-statement AS65004-v6-exact term accept then local-preference 120
+set policy-options policy-statement AS65004-v6-exact term accept then accept
+set policy-options policy-statement AS65004-v6-exact then reject
+set policy-options policy-statement drop-bogons term drop-bogons from route-filter 0.0.0.0/0 exact reject
+set policy-options policy-statement drop-bogons term drop-bogons from route-filter 0.0.0.0/0 upto /24 next policy
+set policy-options policy-statement drop-bogons term drop-bogons then reject
+set policy-options policy-statement drop-bogons then reject
+set policy-options policy-statement drop-bogons-v6 term drop-bogons-v6 from family inet6
+set policy-options policy-statement drop-bogons-v6 term drop-bogons-v6 from route-filter ::/0 upto /48 next policy
+set policy-options policy-statement drop-bogons-v6 term drop-bogons-v6 then reject
+set policy-options policy-statement next-hop-self then next-hop self
+set policy-options policy-statement next-hop-self then next policy
+set policy-options policy-statement no-exchange term no-exchange from route-filter 0.0.0.0/0 exact reject
+set policy-options policy-statement no-exchange term no-exchange then reject
+set policy-options policy-statement no-exchange-v6 term no-exchange from route-filter ::/0 exact reject
+set policy-options policy-statement no-exchange-v6 term no-exchange then reject
+set policy-options policy-statement set-customer-in term default then local-preference 120
+set policy-options policy-statement set-customer-in term default then next policy
+set policy-options policy-statement set-customer-in then reject
+set policy-options policy-statement static-or-connected term static_connected from route-filter 10.33.0.0/16 exact
+set policy-options policy-statement static-or-connected term static_connected then accept
+set policy-options policy-statement static-or-connected-v6 term static-connected-v6 from route-filter 2406:6433::/32 exact
+set policy-options policy-statement static-or-connected-v6 term static-connected-v6 then accept
+set protocols bgp group eBGP-Tier1-AS64655-v4 type external
+set protocols bgp group eBGP-Tier1-AS64655-v4 family inet unicast
+set protocols bgp group eBGP-Tier1-AS64655-v4 export drop-bogons
+set protocols bgp group eBGP-Tier1-AS64655-v4 export static-or-connected
+set protocols bgp group eBGP-Tier1-AS64655-v4 export AS64655-v4-Tier1-out
+set protocols bgp group eBGP-Tier1-AS64655-v4 export next-hop-self
+set protocols bgp group eBGP-Tier1-AS64655-v4 export drop-bogons-v6
+set protocols bgp group eBGP-Tier1-AS64655-v4 peer-as 64655
+set protocols bgp group eBGP-Tier1-AS64655-v4 neighbor 10.55.1.1
+set protocols bgp group eBGP-Tier1-AS64655-v6 type external
+set protocols bgp group eBGP-Tier1-AS64655-v6 family inet6 unicast
+set protocols bgp group eBGP-Tier1-AS64655-v6 export static-or-connected-v6
+set protocols bgp group eBGP-Tier1-AS64655-v6 export AS64655-v6-Tier1-out
+set protocols bgp group eBGP-Tier1-AS64655-v6 export next-hop-self
+set protocols bgp group eBGP-Tier1-AS64655-v6 peer-as 64655
+set protocols bgp group eBGP-Tier1-AS64655-v6 neighbor 2406:6455:1::1
+set protocols bgp group eBGP-to-customers type external
+set protocols bgp group eBGP-to-customers export drop-bogons
+set protocols bgp group eBGP-to-customers export static-or-connected
+set protocols bgp group eBGP-to-customers export next-hop-self
+set protocols bgp group eBGP-to-customers neighbor 10.33.1.6 description "Customer AS65004 Singapore"
+set protocols bgp group eBGP-to-customers neighbor 10.33.1.6 accept-remote-nexthop
+set protocols bgp group eBGP-to-customers neighbor 10.33.1.6 import AS65004-v4-cust-in
+set protocols bgp group eBGP-to-customers neighbor 10.33.1.6 import set-customer-in
+set protocols bgp group eBGP-to-customers neighbor 10.33.1.6 peer-as 65004
+set protocols bgp group eBGP-to-customers neighbor 10.33.1.2 description "Customer AS65001 Hongkong"
+set protocols bgp group eBGP-to-customers neighbor 10.33.1.2 accept-remote-nexthop
+set protocols bgp group eBGP-to-customers neighbor 10.33.1.2 import AS65001-v4-cust-in
+set protocols bgp group eBGP-to-customers neighbor 10.33.1.2 import set-customer-in
+set protocols bgp group eBGP-to-customers neighbor 10.33.1.2 peer-as 65001
+set protocols bgp group eBGP-to-customers-v6 type external
+set protocols bgp group eBGP-to-customers-v6 export drop-bogons-v6
+set protocols bgp group eBGP-to-customers-v6 export static-or-connected-v6
+set protocols bgp group eBGP-to-customers-v6 export next-hop-self
+set protocols bgp group eBGP-to-customers-v6 neighbor 2406:6433:1::6 description "Customer AS65004 Singapore v6"
+set protocols bgp group eBGP-to-customers-v6 neighbor 2406:6433:1::6 accept-remote-nexthop
+set protocols bgp group eBGP-to-customers-v6 neighbor 2406:6433:1::6 import set-customer-in
+set protocols bgp group eBGP-to-customers-v6 neighbor 2406:6433:1::6 import AS65004-v6-cust-in
+set protocols bgp group eBGP-to-customers-v6 neighbor 2406:6433:1::6 peer-as 65004
+set protocols bgp group eBGP-to-customers-v6 neighbor 2406:6433:1::2 description "Customer AS65001 Sydney v6"
+set protocols bgp group eBGP-to-customers-v6 neighbor 2406:6433:1::2 accept-remote-nexthop
+set protocols bgp group eBGP-to-customers-v6 neighbor 2406:6433:1::2 import set-customer-in
+set protocols bgp group eBGP-to-customers-v6 neighbor 2406:6433:1::2 import AS65001-v6-cust-in
+set protocols bgp group eBGP-to-customers-v6 neighbor 2406:6433:1::2 peer-as 65001
+set routing-options rib inet6.0 static route 2406:6433::/32 discard
+set routing-options autonomous-system 64633
+set routing-options static route 10.33.0.0/16 discard
+
+commit and-quit
