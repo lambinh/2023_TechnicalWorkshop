@@ -1,0 +1,23 @@
+policy-options {
+    policy-statement rpki {
+        term mark-valids {
+            from validation-database valid;
+            then {
+                validation-state valid;
+                next policy;
+            }
+        }
+        term drop-invalids {
+            from validation-database invalid;
+            then {
+                validation-state invalid;
+                reject;
+            }
+        }
+        then {
+            validation-state unknown;
+            next policy;
+        }
+    }
+}
+

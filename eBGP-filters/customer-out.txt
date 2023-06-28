@@ -1,0 +1,24 @@
+    policy-statement customer-out {
+        term peer-routes {
+            from community comm-peer;
+            then {
+                community add comm-accept;
+                next policy;
+            }
+        }
+        term our-routes {
+            from community comm-customer;
+            then {
+                community add comm-accept;
+                next policy;
+            }
+        }
+        term transit-routes {
+            from community comm-transit;
+            then {
+                community add comm-accept;
+                next policy;
+            }
+        }
+        then reject;
+    }

@@ -1,0 +1,102 @@
+interfaces {
+    lo0 {
+        description "loopback interfaces";
+        unit 0 {
+            family inet {
+                no-redirects;
+                filter {
+                    input local;
+                }
+            }
+            family inet6 {
+                filter {
+                    input local6;
+                }
+            }
+        }
+    }
+}
+firewall {
+        filter local {
+            term bgp:active {
+                from {
+                    source-prefix-list {
+                        bgp_neighbors;
+                    }
+                    protocol tcp;
+                    source-port bgp;
+                    destination-port 49125-65535;
+                    tcp-established;
+                }
+                then {
+                    count bgp:active;
+                    accept;
+                }
+            }
+            term bgp:passive {
+                from {
+                    source-prefix-list {
+                        bgp_neighbors;
+                    }
+                    protocol tcp;
+                    destination-port bgp;
+                }
+                then {
+                    count bgp:passive;
+                    accept;
+                }
+            }
+            term mgmt:ssh {
+                from {
+                    source-prefix-list {
+                        management_hosts;
+                    }
+                    protocol tcp;
+                    destination-port [ telnet ssh];
+                }
+                then {
+                    count mgmt:ssh;
+                    accept;
+                }
+            }
+            term mgmt:snmp {
+                from {
+                    source-prefix-list {
+                        al_allow_snmp;
+                    }
+                    protocol udp;
+                    destination-port snmp;
+                }
+                then {
+                    count mgmt:snmp;
+                    accept;
+                }
+            }
+
+            term icmp {
+                from {
+                    protocol icmp;
+                    icmp-type [ echo-reply echo-request time-exceeded unreachable ];
+                }
+                then {
+                    policer police_icmp_local;
+                    count icmp;
+                    accept;
+                }
+            }
+            term discard {
+                then {
+                    count discard;
+                    discard;
+                }
+            }
+        }
+
+    policer police_icmp_local {
+        if-exceeding {
+            bandwidth-limit 1m;
+            burst-size-limit 256k;
+        }
+        then discard;
+    }
+}

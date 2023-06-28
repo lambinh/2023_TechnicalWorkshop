@@ -1,0 +1,33 @@
+
+
+# define lock-peer-out policy, using bgp community tag
+# Import Route: classify if it is peer, customer or transit route
+
+set policy-options policy-statement lock-peer-out term deny from community comm-peer
+set policy-options policy-statement lock-peer-out term deny from community comm-transit
+set policy-options policy-statement lock-peer-out term deny then reject
+set policy-options policy-statement lock-peer-out then next policy
+
+set protocols bgp group eBGP-to-transits neighbor 10.55.1.5 description "Transit AS64655 Tokyo"
+set protocols bgp group eBGP-to-transits neighbor 10.55.1.5 import drop-bogons
+set protocols bgp group eBGP-to-transits neighbor 10.55.1.5 import AS64655-route-mark
+set protocols bgp group eBGP-to-transits neighbor 10.55.1.5 import set-transit-in
+set protocols bgp group eBGP-to-transits neighbor 10.55.1.5 import final-filter
+set protocols bgp group eBGP-to-transits neighbor 10.55.1.5 export lock-peer-out
+set protocols bgp group eBGP-to-transits neighbor 10.55.1.5 export drop-bogons
+set protocols bgp group eBGP-to-transits neighbor 10.55.1.5 export static-or-connected
+set protocols bgp group eBGP-to-transits neighbor 10.55.1.5 export AS64655-v4-transit-out
+set protocols bgp group eBGP-to-transits neighbor 10.55.1.5 export next-hop-self
+set protocols bgp group eBGP-to-transits neighbor 10.55.1.5 peer-as 64655
+set protocols bgp group eBGP-to-transits neighbor 10.33.1.5 description "Transit AS64633 Seoul"
+set protocols bgp group eBGP-to-transits neighbor 10.33.1.5 import drop-bogons
+set protocols bgp group eBGP-to-transits neighbor 10.33.1.5 import AS64633-route-mark
+set protocols bgp group eBGP-to-transits neighbor 10.33.1.5 import set-transit-in
+set protocols bgp group eBGP-to-transits neighbor 10.33.1.5 import final-filter
+set protocols bgp group eBGP-to-transits neighbor 10.33.1.5 export lock-peer-out
+set protocols bgp group eBGP-to-transits neighbor 10.33.1.5 export drop-bogons
+set protocols bgp group eBGP-to-transits neighbor 10.33.1.5 export static-or-connected
+set protocols bgp group eBGP-to-transits neighbor 10.33.1.5 export AS64633-v4-transit-out
+set protocols bgp group eBGP-to-transits neighbor 10.33.1.5 export next-hop-self
+set protocols bgp group eBGP-to-transits neighbor 10.33.1.5 peer-as 64633
+

@@ -1,0 +1,34 @@
+    /* Filter some bogon routes. */
+    policy-statement bogon {
+        term drop-bogons {
+            from {
+                /* Default */
+                route-filter 0.0.0.0/0 exact reject;
+                /* Prefix is 0, any mask. */
+                route-filter 0.0.0.0/8 orlonger reject;
+                /* 0/* May also want to reject ?/[0-6] */
+                route-filter 0.0.0.0/0 through 0.0.0.0/32 reject;
+                /* Loopback */
+                route-filter 127.0.0.0/8 orlonger reject;
+                /* Private */
+                route-filter 10.0.0.0/8 orlonger reject;
+                route-filter 172.16.0.0/12 orlonger reject;
+                route-filter 192.168.0.0/16 orlonger reject;
+                /* 6to4 global anycast */
+                route-filter 192.88.99.0/24 orlonger reject;
+                /* Link local */
+                route-filter 169.254.0.0/16 orlonger reject;
+                /* rfc5735 Test/Reserved networks */
+                route-filter 192.0.0.0/24 orlonger reject;
+                route-filter 192.0.2.0/24 orlonger reject;
+                route-filter 198.18.0.0/15 orlonger reject;
+                route-filter 198.51.100.0/24 orlonger reject;
+                route-filter 203.0.113.0/24 orlonger reject;
+                /* rfc6598 IPv4 Prefix for Shared Address Space */
+                route-filter 100.64.0.0/10 orlonger reject;
+                /* Multicast & higher */
+                route-filter 224.0.0.0/3 orlonger reject;
+            }
+            then reject;
+        }
+    }

@@ -1,0 +1,170 @@
+policy-options {
+    prefix-list acl-specific-source-v4 {
+        192.168.1.1;   # sample prefix
+
+    }
+
+    prefix-list deny-to-specific-destination-v4 {
+        10.10.10.10;   # sample prefix
+    }
+    prefix-list bgp-neighbors-v4 {
+        10.10.10.1;    # sample prefix
+    }
+    prefix-list  external-tools-v4 {
+        172.16.1.0/24;   # sample prefix
+    }
+
+     prefix-list  external-infra-v4 {
+         10.10.1.0/24;   # sample prefix
+     }
+}
+
+
+
+filter edge4_filter-in {
+        term deny-to-specific-source-v4 {
+            from {
+                source-prefix-list {
+                    acl-specific-source-v4;
+                }
+            }
+            then {
+                count deny-to-acl-specific-source-v4;
+                discard;
+            }
+        }
+        term deny-to-specific-destination-v4 {
+            from {
+                destination-prefix-list {
+                    acl-specific-destination-v4;
+                }
+            }
+            then {
+                count deny-to-acl-specific-destination-v4;
+                discard;
+            }
+        }
+        term allow-icmp-from-neighbors-v4 {
+            from {
+                source-prefix-list {
+                    bgp-neighbors-v4;
+                }
+                protocol icmp;
+            }
+            then {
+                count allow-icmp-from-neighbors-v4;
+                accept;
+            }
+        }
+        term allow-traceroute-from-neighbors-v4 {
+            from {
+                source-prefix-list {
+                    bgp-neighbors-v4;;
+                }
+                protocol udp;
+                destination-port 33434-33689;
+            }
+            then {
+                count allow-traceroute-from-neighbors-v4;
+                accept;
+            }
+        }
+        term allow-active-bgp-from-neighbors-v4 {
+            from {
+                source-prefix-list {
+                    bgp-neighbors-v4;;
+                }
+                protocol tcp;
+                source-port bgp;
+                destination-port 1024-65535;
+                tcp-established;
+            }
+            then {
+                count allow-active-bgp-from-neighbors-v4;
+                accept;
+            }
+        }
+        term allow-passive-bgp-from-neighbors-v4 {
+            from {
+                source-prefix-list {
+                    bgp_neighbors-v4;
+                }
+                protocol tcp;
+                destination-port bgp;
+            }
+            then {
+                count allow-passive-bgp-from-neighbors-v4;
+                accept;
+            }
+        }
+        term bogon-source-v4 {
+            from {
+                source-prefix-list {
+                    bogon-v4;
+                }
+            }
+            then {
+                count bogon-source-v4;
+                discard;
+            }
+        }
+        term external-tools-v4 {
+            from {
+                source-prefix-list {
+                    external-tools-v4;
+                }
+            }
+            then {
+                count external-tools-v4;
+                accept;
+            }
+        }
+        term allow-external-to-internal-infra-v4 {
+            from {
+                source-prefix-list {
+                    external-infra-v4;
+                }
+            }
+            then {
+                count allow-external-to-internal-infra-v4;
+                accept;
+            }
+        }
+        term drop-to-internal-infra-v4 {
+            from {
+                destination-prefix-list {
+                    internal-infra-v4;
+                }
+            }
+            then {
+                count drop-to-internal-infra-v4;
+                discard;
+            }
+        }
+        term limit-amplifiers-v4 {
+            from {
+                protocol udp;
+                source-port [ 19 123 389 1900 11211 ];
+            }
+            then {
+                policer police_ddos;
+                count limit-amplifiers-v4;
+                accept;
+            }
+        }
+        term accept {
+            then {
+                count accept;
+                accept;
+            }
+        }
+    }
+
+####   
+    policer police_ddos {
+        if-exceeding {
+            bandwidth-limit 200m;
+            burst-size-limit 256k;
+        }
+        then discard;
+    }

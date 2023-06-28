@@ -1,0 +1,23 @@
+## sample of eBGP to customers
+        group eBGP-to-customers {
+            type external;
+            enforce-first-as;
+            export [ static-or-connected bogon reject-bad-routes cust-prepend customer-out next-hop-self final-filter ];
+            remove-private;
+            neighbor 10.4.1.6 {
+                description "Customer Sydney AS65106";
+                out-delay 1;
+                import [ rpki bogon-asn-in bogon no-exchange reject-bad-routes set-customer-in AS65106-cust-in final-filter ];
+                family inet {
+                    unicast {
+                        prefix-limit {
+                            maximum 1000;
+                            teardown 90 idle-timeout 90;
+                        }
+                    }
+                }
+                authentication-key <TESTING>
+                peer-as 65106;
+            }
+        }
+        

@@ -1,0 +1,25 @@
+    policy-statement bogon-v6 {
+        term drop-bogons {
+            from {
+                family inet6;
+                /* default */
+                route-filter ::/0 exact reject;
+                /* loopback, unspecified, and v4 mapped */
+                route-filter ::/8 upto /128 reject;
+                /* rfc 6666 space */
+                route-filter 100::/64 upto /128 reject;
+                /* 6bone space */
+                route-filter 3ffe::/16 upto /128 reject;
+                /* IPv6 documentation prefix */
+                route-filter 2001:db8::/32 upto /128 reject;
+                /* specifics from teredo space */
+                route-filter 2001::/32 prefix-length-range /33-/128 reject;
+                /* 6to4 space */
+                route-filter 2002::/16 orlonger reject;
+                /* local-scope multicast ranges */
+                route-filter fe00::/9 upto /128 reject;
+                route-filter ff00::/8 upto /128 reject;
+            }
+            then reject;
+        }
+    }
