@@ -1,4 +1,4 @@
-<mxfile host="Electron" modified="2023-06-21T03:41:49.164Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.5.0 Chrome/112.0.5615.204 Electron/24.5.1 Safari/537.36" etag="kpWAU7kpD_t0eAp-OLZ2" version="21.5.0" type="device" pages="2">
+<mxfile host="Electron" modified="2023-06-29T01:17:06.170Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.5.0 Chrome/112.0.5615.204 Electron/24.5.1 Safari/537.36" etag="qLbHTOb8TJqQSSzk8JGY" version="21.5.0" type="device" pages="2">
   <diagram id="50-7YsKx9Zdha0lFLCU1" name="Juniper vLab Sandbox">
     <mxGraphModel dx="1252" dy="686" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
       <root>
@@ -50,7 +50,7 @@
         <mxCell id="o2XAByNYnUErdxfXlCn6-5" value="Mumbai" style="text;html=1;strokeColor=#2D7600;fillColor=#60a917;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#ffffff;" parent="1" vertex="1">
           <mxGeometry x="89" y="630" width="60" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="o2XAByNYnUErdxfXlCn6-6" value="Sydney" style="text;html=1;strokeColor=#2D7600;fillColor=#60a917;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#ffffff;" parent="1" vertex="1">
+        <mxCell id="o2XAByNYnUErdxfXlCn6-6" value="Hongkong" style="text;html=1;strokeColor=#2D7600;fillColor=#60a917;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#ffffff;" parent="1" vertex="1">
           <mxGeometry x="149" y="500" width="60" height="30" as="geometry" />
         </mxCell>
         <mxCell id="o2XAByNYnUErdxfXlCn6-7" value="Sydney" style="text;html=1;strokeColor=#2D7600;fillColor=#60a917;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#ffffff;" parent="1" vertex="1">
@@ -68,7 +68,7 @@
         <mxCell id="o2XAByNYnUErdxfXlCn6-11" value="Mumbai" style="text;html=1;strokeColor=#2D7600;fillColor=#60a917;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#ffffff;" parent="1" vertex="1">
           <mxGeometry x="640" y="620" width="60" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="o2XAByNYnUErdxfXlCn6-12" value="Sydney" style="text;html=1;strokeColor=#2D7600;fillColor=#60a917;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#ffffff;" parent="1" vertex="1">
+        <mxCell id="o2XAByNYnUErdxfXlCn6-12" value="Hongkong" style="text;html=1;strokeColor=#2D7600;fillColor=#60a917;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#ffffff;" parent="1" vertex="1">
           <mxGeometry x="690" y="500" width="60" height="30" as="geometry" />
         </mxCell>
       </root>
